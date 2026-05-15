@@ -28,7 +28,6 @@ export function analyzeSymptoms(selectedIds) {
   const has = (id) => selectedIds.includes(id);
   const count = selectedIds.length;
 
-  // No symptoms selected
   if (count === 0) {
     return {
       condition: 'No Symptoms Selected',
@@ -62,7 +61,7 @@ export function analyzeSymptoms(selectedIds) {
     return {
       condition: 'Chest Discomfort',
       advice: 'Chest pain should not be ignored. Please consult a doctor as soon as possible.',
-      severity: SEVERITY.URGENT,
+      severity: SEVERITY.URGENT, 
       tips: [
         'Avoid physical exertion',
         'Seek medical consultation immediately',
@@ -87,7 +86,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Fever + Fatigue
   if (has('fever') && has('fatigue')) {
     return {
       condition: 'Viral Infection',
@@ -102,7 +100,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Common cold: Cough + Runny Nose + Sore Throat
   if (has('cough') && has('runny_nose') && has('sore_throat')) {
     return {
       condition: 'Common Cold',
@@ -117,7 +114,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Headache + Nausea + Dizziness → possible migraine
   if (has('headache') && has('nausea') && has('dizziness')) {
     return {
       condition: 'Possible Migraine',
@@ -133,7 +129,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Isolated fever
   if (has('fever') && count <= 2) {
     return {
       condition: 'Fever',
@@ -148,7 +143,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Isolated cough
   if (has('cough') && count === 1) {
     return {
       condition: 'Persistent Cough',
@@ -163,7 +157,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Sore throat alone or with cough
   if (has('sore_throat') && count <= 2) {
     return {
       condition: 'Throat Irritation',
@@ -178,7 +171,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Nausea alone or with headache
   if (has('nausea') && count <= 2) {
     return {
       condition: 'Nausea / Digestive Upset',
@@ -193,7 +185,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Many symptoms → general moderate concern
   if (count >= 4) {
     return {
       condition: 'Multiple Symptoms',
@@ -208,7 +199,6 @@ export function analyzeSymptoms(selectedIds) {
     };
   }
 
-  // Generic fallback
   return {
     condition: 'General Discomfort',
     advice: 'Your symptoms suggest general discomfort. Monitor them closely and rest.',

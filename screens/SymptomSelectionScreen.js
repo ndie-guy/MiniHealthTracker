@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Alert,
-} from 'react-native';
+} from 'react-native'; 
 import { StatusBar } from 'expo-status-bar';
 import { SYMPTOMS } from '../logic/healthAnalyzer';
 import SymptomCard from '../components/SymptomCard';
@@ -15,7 +15,7 @@ import Header from '../components/Header';
 
 export default function SymptomSelectionScreen({ navigation }) {
   
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedIds, setSelectedIds] = useState([]); 
 
 
   const handleToggle = (id) => {
@@ -43,7 +43,7 @@ export default function SymptomSelectionScreen({ navigation }) {
     navigation.navigate('Result', { selectedIds });
   };
 
-  const selectionCount = selectedIds.length;
+  const selectionCount = selectedIds.length;  
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -100,7 +100,7 @@ export default function SymptomSelectionScreen({ navigation }) {
             selectionCount === 0 && styles.analyzeButtonDisabled,
           ]}
           onPress={handleAnalyze}
-          disabled={false} // Allow analysis even with 0 symptoms (shows "healthy" message)
+          disabled={false} 
           activeOpacity={0.85}
         >
           <Text style={styles.analyzeText}>

@@ -5,7 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  SafeAreaView,
+  SafeAreaView, 
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { analyzeSymptoms, getSeverityMeta, SYMPTOMS } from '../logic/healthAnalyzer';
@@ -19,7 +19,6 @@ export default function ResultScreen({ navigation, route }) {
   const result = analyzeSymptoms(selectedIds);
   const severityMeta = getSeverityMeta(result.severity);
 
-  // Get full symptom objects for selected IDs
   const selectedSymptoms = SYMPTOMS.filter((s) => selectedIds.includes(s.id));
 
   return (

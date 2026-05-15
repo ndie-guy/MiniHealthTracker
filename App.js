@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -7,16 +6,16 @@ import HomeScreen from './screens/HomeScreen';
 import SymptomSelectionScreen from './screens/SymptomSelectionScreen';
 import ResultScreen from './screens/ResultScreen';
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();     
 
 export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Home" 
         screenOptions={{
-          headerShown: false,   
-          animation: 'slide_from_right',
+          headerShown: false,    
+          animation: 'slide_from_right', 
         }}
       >
         {/* Screen 1: Home / Landing */}

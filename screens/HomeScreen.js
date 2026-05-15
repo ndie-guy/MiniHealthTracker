@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   View,
@@ -9,9 +8,9 @@ import {
   Image,
   SafeAreaView,
 } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'expo-status-bar';  
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen({ navigation }) { 
   const features = [
     { icon: '🩺', title: 'Symptom Selection',  desc: 'Choose from 10 common health symptoms' },
     { icon: '🔬', title: 'Smart Analysis',      desc: 'Rule-based health advice engine' },

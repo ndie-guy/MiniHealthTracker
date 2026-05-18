@@ -1,5 +1,5 @@
 export const SYMPTOMS = [
-  { id: 'fever',       label: { en: 'Fever',       fr: 'Fièvre',        wo: 'Tangaay' },       icon: '🌡️', description: { en: 'High body temperature',         fr: 'Température corporelle élevée',    wo: 'Yaram bou tangue' } },
+  { id: 'fever',       label: { en: 'Fever',       fr: 'Fièvre',        wo: 'Tangaay' },       icon: '🌡️', description: { en: 'High body temperature',         fr: 'Température corporelle élevée',    wo: 'Yaram tangoon' } },
   { id: 'fatigue',     label: { en: 'Fatigue',     fr: 'Fatigue',       wo: 'Fàttaliku' },     icon: '😴', description: { en: 'Unusual tiredness or weakness',  fr: 'Fatigue ou faiblesse inhabituelle', wo: 'Doyul dox' } },
   { id: 'cough',       label: { en: 'Cough',       fr: 'Toux',          wo: 'Ottu' },           icon: '🤧', description: { en: 'Persistent or dry cough',        fr: 'Toux persistante ou sèche',        wo: 'Ottu bu dëkk' } },
   { id: 'headache',    label: { en: 'Headache',    fr: 'Mal de tête',   wo: 'Bopp dafa nyëw' }, icon: '🤕', description: { en: 'Pain or pressure in the head',   fr: 'Douleur ou pression dans la tête', wo: 'Bopp bi dafa metti' } },

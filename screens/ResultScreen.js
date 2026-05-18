@@ -1,20 +1,35 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView,
   TouchableOpacity, SafeAreaView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { analyzeSymptoms, getSeverityMeta, SYMPTOMS } from '../logic/healthAnalyzer';
+import { saveSymptomCheck } from '../logic/supabase';
 import Header from '../components/Header';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function ResultScreen({ navigation, route }) {
   const { t, language } = useLanguage();
+  const { user } = useAuth();
   const { selectedIds = [] } = route.params || {};
+  const [saved, setSaved] = useState(false);
 
   const result = analyzeSymptoms(selectedIds, language);
   const severityMeta = getSeverityMeta(result.severity);
   const selectedSymptoms = SYMPTOMS.filter((s) => selectedIds.includes(s.id));
+
+  // Auto-save to Supabase when the result screen loads
+  useEffect(() => {
+    const save = async () => {
+      if (user && selectedIds.length > 0 && !saved) {
+        const { error } = await saveSymptomCheck(user.id, selectedIds, result);
+        if (!error) setSaved(true);
+      }
+    };
+    save();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -28,9 +43,14 @@ export default function ResultScreen({ navigation, route }) {
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-        {
-          
-        }
+        {/* Saved indicator */}
+        {saved && (
+          <View style={styles.savedBanner}>
+            <Text style={styles.savedText}>✅ Saved to your history</Text>
+          </View>
+        )}
+
+        {/* Severity Badge */}
         <View style={[styles.severityBadge, { backgroundColor: severityMeta.bg, borderColor: severityMeta.color }]}>
           <Text style={styles.severityEmoji}>{severityMeta.emoji}</Text>
           <View>
@@ -86,6 +106,10 @@ export default function ResultScreen({ navigation, route }) {
         </View>
 
         {/* Buttons */}
+        <TouchableOpacity style={styles.historyBtn} onPress={() => navigation.navigate('History')}>
+          <Text style={styles.historyBtnText}>📋 View My History</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.retryButton} onPress={() => navigation.navigate('SymptomSelection')}>
           <Text style={styles.retryText}>{t('checkDifferent')}</Text>
         </TouchableOpacity>
@@ -103,6 +127,13 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#f8fafc' },
   scroll: { flex: 1 },
   scrollContent: { padding: 16, paddingBottom: 40 },
+
+  savedBanner: {
+    backgroundColor: '#f0fdf4', borderRadius: 10, padding: 10,
+    alignItems: 'center', marginBottom: 12, borderWidth: 1, borderColor: '#bbf7d0',
+  },
+  savedText: { color: '#15803d', fontSize: 13, fontWeight: '600' },
+
   severityBadge: {
     flexDirection: 'row', alignItems: 'center', borderRadius: 16,
     padding: 18, marginBottom: 14, borderWidth: 2, gap: 14,
@@ -110,6 +141,7 @@ const styles = StyleSheet.create({
   severityEmoji: { fontSize: 36 },
   severityLabel: { fontSize: 12, fontWeight: '700', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 2 },
   conditionText: { fontSize: 20, fontWeight: '800' },
+
   card: {
     backgroundColor: '#ffffff', borderRadius: 14, padding: 16, marginBottom: 12,
     borderWidth: 1, borderColor: '#e5e7eb',
@@ -117,6 +149,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: { fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 10, letterSpacing: 0.3 },
   adviceText: { fontSize: 15, color: '#1f2937', lineHeight: 22 },
+
   symptomsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   symptomChip: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: '#eff6ff',
@@ -125,6 +158,7 @@ const styles = StyleSheet.create({
   },
   chipIcon: { fontSize: 14 },
   chipLabel: { fontSize: 13, color: '#1e40af', fontWeight: '600' },
+
   tipRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10, gap: 10 },
   tipBullet: {
     width: 22, height: 22, borderRadius: 11, backgroundColor: '#1d4ed8',
@@ -132,9 +166,16 @@ const styles = StyleSheet.create({
   },
   tipBulletText: { color: '#ffffff', fontSize: 11, fontWeight: '700' },
   tipText: { flex: 1, fontSize: 14, color: '#374151', lineHeight: 20 },
+
   disclaimer: { backgroundColor: '#fefce8', borderRadius: 12, padding: 14, marginBottom: 16, borderLeftWidth: 3, borderLeftColor: '#f59e0b' },
   disclaimerText: { fontSize: 12, color: '#374151', lineHeight: 18 },
   bold: { fontWeight: '700' },
+
+  historyBtn: {
+    backgroundColor: '#f0fdf4', borderRadius: 14, paddingVertical: 15,
+    alignItems: 'center', marginBottom: 10, borderWidth: 1.5, borderColor: '#bbf7d0',
+  },
+  historyBtnText: { color: '#15803d', fontSize: 15, fontWeight: '700' },
   retryButton: { borderWidth: 2, borderColor: '#1d4ed8', borderRadius: 14, paddingVertical: 15, alignItems: 'center', marginBottom: 10 },
   retryText: { color: '#1d4ed8', fontSize: 15, fontWeight: '700' },
   homeButton: { backgroundColor: '#f1f5f9', borderRadius: 14, paddingVertical: 15, alignItems: 'center' },

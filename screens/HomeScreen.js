@@ -1,16 +1,19 @@
+// screens/HomeScreen.js
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity,
-  ScrollView, SafeAreaView,
+  ScrollView, SafeAreaView, Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
 
 const PROFILE_KEY = 'user_profile';
 
 export default function HomeScreen({ navigation }) {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
   const [userName, setUserName] = useState('');
 
   useEffect(() => {
@@ -28,6 +31,17 @@ export default function HomeScreen({ navigation }) {
     } catch (e) {}
   };
 
+  const handleSignOut = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign Out', style: 'destructive', onPress: signOut },
+      ]
+    );
+  };
+
   const features = [
     { icon: '🩺', titleKey: 'symptomSelection',  descKey: 'symptomSelectionDesc' },
     { icon: '🔬', titleKey: 'smartAnalysis',      descKey: 'smartAnalysisDesc' },
@@ -41,12 +55,19 @@ export default function HomeScreen({ navigation }) {
 
       {/* Hero */}
       <View style={styles.hero}>
-        <View style={styles.heroIconWrap}>
-          <Text style={styles.heroIcon}>💙</Text>
+        <View style={styles.heroTop}>
+          <View style={styles.heroIconWrap}>
+            <Text style={styles.heroIcon}>💙</Text>
+          </View>
+          <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut}>
+            <Text style={styles.signOutText}>Sign Out</Text>
+          </TouchableOpacity>
         </View>
         {userName ? (
           <Text style={styles.heroGreeting}>{t('hello')}, {userName}! 👋</Text>
-        ) : null}
+        ) : (
+          <Text style={styles.heroGreeting}>👋 {user?.email}</Text>
+        )}
         <Text style={styles.heroTitle}>{t('appName')}</Text>
         <Text style={styles.heroTagline}>{t('tagline')}</Text>
       </View>
@@ -55,18 +76,17 @@ export default function HomeScreen({ navigation }) {
 
         {/* Quick Actions */}
         <View style={styles.quickRow}>
-          <TouchableOpacity
-            style={styles.quickBtn}
-            onPress={() => navigation.navigate('Profile')}
-          >
+          <TouchableOpacity style={styles.quickBtn} onPress={() => navigation.navigate('Profile')}>
             <Text style={styles.quickIcon}>👤</Text>
             <Text style={styles.quickLabel}>{t('myProfile')}</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.quickBtn, styles.quickBtnRed]}
-            onPress={() => navigation.navigate('Emergency')}
-          >
+          <TouchableOpacity style={[styles.quickBtn, styles.quickBtnGreen]} onPress={() => navigation.navigate('History')}>
+            <Text style={styles.quickIcon}>📋</Text>
+            <Text style={styles.quickLabel}>My History</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={[styles.quickBtn, styles.quickBtnRed]} onPress={() => navigation.navigate('Emergency')}>
             <Text style={styles.quickIcon}>🆘</Text>
             <Text style={styles.quickLabel}>{t('emergency')}</Text>
           </TouchableOpacity>
@@ -111,35 +131,32 @@ export default function HomeScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#1d4ed8' },
-
-
-
-
-  hero: { alignItems: 'center', paddingVertical: 24, paddingHorizontal: 24, backgroundColor: '#1d4ed8' },
+  hero: { paddingVertical: 20, paddingHorizontal: 20, backgroundColor: '#1d4ed8' },
+  heroTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   heroIconWrap: {
-    width: 64, height: 64, borderRadius: 32,
-    backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center', marginBottom: 10,
+    width: 48, height: 48, borderRadius: 24,
+    backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center',
   },
-  heroIcon: { fontSize: 32 },
-  heroGreeting: { color: '#93c5fd', fontSize: 14, fontWeight: '600', marginBottom: 4 },
-  heroTitle: { fontSize: 28, fontWeight: '800', color: '#ffffff', letterSpacing: -0.5, textAlign: 'center', marginBottom: 8 },
-  heroTagline: { fontSize: 13, color: '#bfdbfe', textAlign: 'center', lineHeight: 18 },
-
+  heroIcon: { fontSize: 24 },
+  signOutBtn: { backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 10, paddingVertical: 6, paddingHorizontal: 12 },
+  signOutText: { color: '#ffffff', fontSize: 13, fontWeight: '600' },
+  heroGreeting: { color: '#93c5fd', fontSize: 13, fontWeight: '600', marginBottom: 4 },
+  heroTitle: { fontSize: 26, fontWeight: '800', color: '#ffffff', letterSpacing: -0.5, marginBottom: 6 },
+  heroTagline: { fontSize: 13, color: '#bfdbfe', lineHeight: 18 },
 
   scroll: { flex: 1, backgroundColor: '#f8fafc', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
   scrollContent: { padding: 20, paddingBottom: 40 },
 
-  
-  quickRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
+  quickRow: { flexDirection: 'row', gap: 8, marginBottom: 20 },
   quickBtn: {
-    flex: 1, backgroundColor: '#eff6ff', borderRadius: 14, paddingVertical: 14,
+    flex: 1, backgroundColor: '#eff6ff', borderRadius: 12, paddingVertical: 12,
     alignItems: 'center', borderWidth: 1.5, borderColor: '#bfdbfe',
   },
+  quickBtnGreen: { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' },
   quickBtnRed: { backgroundColor: '#fef2f2', borderColor: '#fecaca' },
-  quickIcon: { fontSize: 24, marginBottom: 4 },
-  quickLabel: { fontSize: 13, fontWeight: '700', color: '#1e40af' },
+  quickIcon: { fontSize: 20, marginBottom: 4 },
+  quickLabel: { fontSize: 11, fontWeight: '700', color: '#1e40af' },
 
-  
   sectionTitle: { fontSize: 12, fontWeight: '700', color: '#6b7280', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 12 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 18 },
   featureCard: {
@@ -151,7 +168,6 @@ const styles = StyleSheet.create({
   featureTitle: { fontSize: 12, fontWeight: '700', color: '#1f2937', marginBottom: 4 },
   featureDesc: { fontSize: 11, color: '#6b7280', lineHeight: 15 },
 
-  
   disclaimer: {
     flexDirection: 'row', backgroundColor: '#eff6ff', borderRadius: 12,
     padding: 12, marginBottom: 18, borderLeftWidth: 3, borderLeftColor: '#3b82f6', gap: 8,
@@ -160,7 +176,6 @@ const styles = StyleSheet.create({
   disclaimerText: { flex: 1, fontSize: 12, color: '#374151', lineHeight: 17 },
   bold: { fontWeight: '700' },
 
-  
   ctaButton: {
     backgroundColor: '#1d4ed8', borderRadius: 16, paddingVertical: 17, alignItems: 'center',
     shadowColor: '#1d4ed8', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.35, shadowRadius: 10, elevation: 5, marginBottom: 16,
